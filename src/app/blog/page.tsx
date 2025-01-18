@@ -74,7 +74,7 @@ export default async function Blog() {
                     </div>
                 </div>
             </div>
-            <div id='cibersecurity' className='w-full space-y-7 justify-center flex flex-col py-8'>
+            <div id='cibersecurity' className='w-full  space-y-7 justify-center flex flex-col py-8'>
                 <h1 className='section-title mb-10 text-5xl leading-relaxed text-white text-center'>Security Articles</h1>
                 <div className='flex flex-col md:flex-row items-center md:items-start justify-center flex-wrap px-5 gap-5'>
                     {security.map((card, index) => AboutCard(index, card.image, card.title, card.link))}
@@ -86,7 +86,7 @@ export default async function Blog() {
 function AboutCard(index: number, img: string, title: string, link: string) {
     console.log(link);
     return (
-        <div key={index} className='flex flex-col w-96 mb-10 bg-[#404040]'>
+        <div key={index} className='flex flex-col w-72 md:w-96 mb-10 bg-[#404040]'>
             <div className='card-img'>
                 <img className='object-fill h-56 w-full' src={img} alt="" />
             </div>
