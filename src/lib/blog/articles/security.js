@@ -10,7 +10,7 @@ export const security = [
     {
         title: 'Secure Software Development Lifecycle',
         text: 'The Secure Software Development Lifecycle (SSDLC) is a methodology for developing secure software. In this article, we will discuss the key principles of SSDLC and how to implement them in your organization.',
-        link: '/projects/ssdlc',
+        link: '/blog/ssdlc',
         image: '/articles_images/ssdlc.png',
     },
     {

@@ -1,0 +1,227 @@
+import { OrderedList } from "@/app/ui/listCard";
+
+# IN PROCESS...
+
+# Software Development Lifecycle
+
+## What it is?
+
+The software development cycle is a structured process used to create and manage the development of software systems.
+It includes several phases that cover everything from the initial conception of a project to its deployment and maintenance.
+
+## Typical phases
+
+<ol className="row-list">
+
+<OrderedList
+  title="Requirements Analysis"
+  text="User needs are identified and software requirementsare defined."
+/>
+
+<OrderedList
+  title="Design"
+  text="A software architecture is developed that satisfies the identified requirements (Functional/Non-functional)."
+/>
+
+<OrderedList
+  title="Implementation or Coding"
+  text="The software code is written according to the established design."
+/>
+
+<OrderedList
+  title="Testing"
+  text="It is verified that the software works correctly and meets the specified requirements."
+/>
+
+<OrderedList
+  title="Deployment"
+  text="The software is made available to users."
+/>
+<OrderedList
+  title="Maintenance"
+  text="Updates and fixes are made to ensure that the software continues to function efficiently over time."
+/>
+
+</ol>
+
+This cycle can follow different models, such as waterfall, agile, iterative, among others, each with its specific approach and methodology. The main objective is to ensure the delivery of high-quality software that meets the needs of the end user.
+
+# Secure Software Development Lifecycle
+
+Is a variant of the traditional software development life cycle (SDLC) that incorporates security practices into each phase of the development process. Its goal is to ensure that security is a central consideration throughout software development, minimizing the risks of vulnerabilities and attacks.
+
+## Phases
+
+<ol className="row-list">
+
+<OrderedList
+  title="Requirements Planning and Analysis"
+  text="In addition to identifying software
+   functionalities and requirements, threat modeling or security risk analysis is
+   performed and security requirements are defined."
+/>
+
+<OrderedList
+  title="Design"
+  text="The software architecture is developed taking into account security
+   best practices, such as the Principle of Least Privilege and the definition of
+   security controls."
+/>
+
+<OrderedList
+  title="Implementation or Coding"
+  text="The code is written following secure programming
+   practices to minimize vulnerabilities. This includes code review and the implementation
+   of static security analysis tools."
+/>
+
+<OrderedList
+  title="Testing"
+  text="In addition to functional testing, specific security testing,
+   such as penetration testing and vulnerability assessments, is performed to identify
+   and correct security issues."
+/>
+
+<OrderedList
+  title="Deployment"
+  text="Measures are implemented to protect the software in its production
+   environment, including secure server and network configuration."
+/>
+
+<OrderedList
+  title="Maintenance and Updates"
+  text="The software is continuously monitored for new vulnerabilities and security patches
+   and updates are applied regularly."
+/>
+
+</ol>
+
+The S-SDLC seeks to create a more secure and robust end product against cyber threats, which is crucial in today's technological environment where attacks and vulnerabilities are increasingly sophisticated.
+
+In this article, i am going to show a methodology to implement this lifecycle. It is called [_7 Software Security Touchpoints_](http://www.swsec.com/resources/touchpoints/) by Gary McGraw.
+
+These activities are strategically integrated into the development cycle, focusing specifically on security aspects.
+They are an essential component of risk management in software development, designed to strengthen security at every stage of the process.
+
+## Phases
+
+![][image1]
+
+## Ordered by effectiveness
+
+<ol className="col-list">
+
+<OrderedList title="Code review" text="" />
+<OrderedList title="Architectural risk analysis" text="" />
+<OrderedList title="Penetration testing" text="" />
+<OrderedList title="Risk-based security testing" text="" />
+<OrderedList title="Abuse cases" text="" />
+<OrderedList title="Security requirements" text="" />
+<OrderedList title="Security operations" text="" />
+
+</ol>
+
+<div className="phases-div" >
+
+<div className="phase" >
+
+# Code review
+
+- Applicability: This review focuses directly on the developed source code.
+- Risk Example: For example, a SQL Injection risk could be identified on line 48 of the file 'Client.java'.
+- Importance: Since all software development results in the creation of code, this review is crucial to identify and address bugs that are introduced during the implementation phase. The goal is to ensure the quality and security of the code produced.
+- Static Code Analysis Tools: Key to Detecting Vulnerabilities
+
+These tools, such as Fortify, SonarQube, and similar, are essential for examining code and discovering potential vulnerabilities. In addition, manual code review is recommended, especially in critical sections.
+It is important to recognize that even the best review approach can detect only up to 50% of security issues. Therefore, it is essential to complement these reviews with a detailed analysis of the risks associated with the software architecture.
+
+</div>
+
+<div className="phase" >
+# Architectural risk analysis
+
+- Applicability: This analysis focuses on the design specifications of the software.
+- Risk Example: Some potential risks include management functionalities that are accessible from the Internet or calls to web services without proper authentication.
+- Importance of Secure Design: It is crucial that security at the architecture design level is consistent and robust. This involves identifying, analyzing, and documenting potential attack vectors using tools such as Data Flow Diagrams (DFD), STRIDE, Attack Trees, and DREAD.
+- Assessment and Mitigation: Security defects must be thoroughly covered and assessed at the architectural level, as well as how they should be mitigated. Defects that are not detected at this stage can result in difficult and costly problems to solve later.
+- Continuous Risk Management: Throughout the various stages of development, new risks can always arise. Therefore, it is vital to maintain a constant focus on risk management activities to ensure the integrity and security of the software throughout its entire life cycle.
+
+</div>
+
+<div className="phase" >
+# Penetration test
+
+- Applicability: Production system
+- Risk Example: Insecure cookie settings, predictable admin passwords.
+- Provides a concrete understanding of software security in the production environment.
+- An application that fails a black box test using automated tools indicates a significant security gap.
+
+It is especially effective when combined with risk analysis and code review. Without these elements, its usefulness is limited and delayed.
+It should focus on evaluating the most vulnerable aspects identified in the architectural analysis.
+Network and application penetration testing are different and address different security aspects.
+
+</div>
+
+<div className="phase" >
+# Risk-based security testing
+
+- Applicability: Targeted to specific parts or the entire system.
+- Perform security testing on individual modules or functional sections of the application.
+
+Why wait until the end to verify the inability to enumerate users or predict passwords?
+Guided by risk analysis, attack patterns, and abuse scenarios you can confirm the effectiveness of the implemented mitigation measures.
+
+</div>
+
+<div className="phase" >
+# Abuse cases
+
+- Applicability: Aimed at Requirements and Use Cases.
+
+They describe how the system reacts to attacks, simulating malicious actions.
+They are presented as use cases, highlighting the "functionalities" that the system should not allow.
+It consists of analyzing the goals and opportunities that the system could offer to an attacker.
+
+</div>
+
+<div className="phase" >
+# Security requirements
+
+Applicability: System requirements.
+
+- Risk examples: - Failure to specify the data that requires protection. - Failure to define appropriate encryption algorithms.
+
+Security must be clearly incorporated into the system requirements.
+
+Security requirements should include both specific security features (such as the use of cryptography) and emerging features (identified through abuse cases and attack patterns).
+Effectively identifying and managing security requirements is a complex task that requires a comprehensive approach.
+
+</div>
+
+<div className="phase" >
+# Security operations
+
+- Applicability: Production systems.
+- Risk example: Insufficient logging on systems, making it difficult to identify attackers.
+  Software security benefits significantly from network security practices.
+- Feedback: Provides valuable information to development teams to strengthen security.
+- Monitoring: Actively deploying and monitoring production systems is critical to strengthening security.
+  Knowledge in Attack Situations:
+- Understanding software behavior during an attack is crucial for security.
+- Knowledge gained during attacks can be integrated into the software development lifecycle, continuously improving security measures.
+
+</div>
+
+<div className="phase" >
+# External analysis
+
+- Definition: Assessment performed by individuals outside the design and development team.
+
+In general, Software Security Touchpoints (SST) greatly benefit from being analyzed by individuals who were not involved in the original design or implementation of the software.
+This external approach provides a fresh, objective perspective, essential for identifying potential vulnerabilities and improving overall system security.
+
+</div>
+
+</div>
+
+[image1]: /project-images/ssdlc/image1.png

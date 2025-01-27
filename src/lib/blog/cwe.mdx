@@ -1,0 +1,497 @@
+import Clipboard from "@/app/ui/clipboard";
+
+<div className="project-image">
+  **![Imagen1](/project-images/cwe/image1.png)**
+</div>
+
+<div className="project-title">
+
+# **Mitigación de vulnerabilidades de CWE**
+
+</div>
+
+<div className="signature-info">
+
+**Ingeniería en Informática**  
+**Desarrollo Seguro**
+
+---
+
+**Integrantes:**
+
+- Jose Varela
+- Nicolas Rodriguez
+- Lucas Alegre
+
+**Docentes:**
+
+- Mauro Flores
+- Sebastian Mazzey
+
+</div>
+
+# Vulnerabilidad 1: CWE-79: Cross Site Scripting
+
+## Descripción
+
+La página de inicio de AltoroJ no controla de manera adecuada el input generado por el usuario antes de usarlo como salida en la página web, y ser desplegado a otros usuarios.
+
+## Descripción extendida:
+
+Esta vulnerabilidad permite el despliegue de páginas web que cargan dinámicamente datos que son introducidos por los usuarios.  
+No aplicar ninguna restricción en los datos ingresados por los usuarios permite que los mismos introduzcan código ejecutable en los servidores web, produciendo funcionalidades no esperadas en la aplicación \- visualización de cookies, redirección a páginas inseguras, robos de identidades, etc \-.
+
+## Plataformas aplicables
+
+No es específico a ningún lenguaje en específico.  
+Aplicable en plataformas web.
+
+## Impacto
+
+Integridad. Puede resultar en el borrado de datos del servidor web.  
+Confidencialidad. El ataque más común es el robo de información a partir del acceso a cookies de terceros.  
+Disponibilidad.
+
+## Prueba de concepto (PoC)
+
+1. Haciendo click en el parámetro de texto que se encuentra en la parte superior derecha e ingresamos cualquier texto, podemos ver que la url cambia y un parámetro es guardado.
+2. Este parámetro se llama “query” y toma el valor que nosotros ingresemos en el input.
+3. En la pantalla dos textos aparecen:
+   1. “No results were found for the query:”: Esto nos dice que la aplicación está realizando una búsqueda en alguna base de datos con el contenido que nosotros ingresemos.
+   2. También se muestra por pantalla el texto que nosotros ingresemos, por lo tanto sabemos que esa variable guardada es ejecutada dentro de un bloque html.
+4. Sabiendo que el texto que nosotros ingresemos es ejecutado en un bloque html, podemos ingresar un script de javascript y darnos cuenta si el texto es sanitizado antes de ser guardado y mostrado.
+5. Si ingresamos el siguiente script: “ \<script\>alert(“Texto”)\</script\> ”, podemos observar que una alerta de navegador aparece en nuestra pantalla.¡Vulnerabilidad descubierta\!
+
+## Mitigación
+
+Para realizar la mitigación se debe sanitizar el contenido ingresado por el usuario antes de ser mostrado en la página.
+
+1. En el archivo “search.jsp” se puede ver que el único control del input es :
+
+![][image2]
+
+2. Utilizando la herramienta “ServletUtil.sanitzieHtmlWithRegex” de Java podemos sanitizar la entrada que ingresa el usuario. Si la misma contiene algún script, el método devuelve un string vacío.
+3. De esta manera evitamos la ejecución de scripts innecesarios en nuestro código html.
+
+### Código fuente después de la mitigación
+
+![][image3]  
+En verde las líneas de código que se modificaron/agregaron.
+
+---
+
+# Vulnerabilidad 2: CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')
+
+## Descripción
+
+En la página de login de AltoroJ el usuario puede ingresar comandos SQL en el campo de user.
+
+## Descripción extendida:
+
+CWE-89, también conocido como inyección SQL, ocurre cuando una aplicación no filtra adecuadamente los caracteres especiales en las consultas SQL. En la página de inicio de sesión de AltoroJ, el campo de "user" permite a los usuarios introducir comandos SQL maliciosos. Esto puede permitir a un atacante manipular la base de datos, exponiendo o alterando información sensible.
+
+## Plataformas aplicables
+
+La vulnerabilidad se aplica sobre cualquier plataforma de base de datos que acepte sentencias SQL y puede ser explotada desde cualquier navegador.
+
+## Impacto
+
+Afecta la Integridad, Confidencialidad y Disponibilidad.
+
+## Prueba de concepto (PoC)
+
+1. Haciendo click en el botón de login nos redirigirá a /AltoroJ/login.jsp.
+2. Aquí se nos presentarán dos inputs uno username y otro password.
+3. Si en el input de user introducimos “‘ or 1 \= 1 \--” y cualquier string en la password, podremos acceder como administrador a la página web.
+
+## Mitigación
+
+Para realizar la mitigación se debe sanitizar la sentencia SQL el codigo nos deberia quedat algo similar a esto:  
+![][image4]
+
+---
+
+# Vulnerabilidad 3: CWE-20: Improper Input Validation
+
+## Descripción
+
+La aplicación recibe un input o datos en el parámetro “_listAccounts_” y no valida que dichos datos cumplan con los tipos que se espera, a la hora de realizar alguna operación.
+
+## Descripción extendida:
+
+La vulnerabilidad se encuentra en el parámetro “listAccounts”, el cual es usado para obtener todos los detalles de ese número de cuenta específico como el saldo, transacciones realizadas, etc.  
+En este caso, la aplicación no chequea que el número de cuenta que llega desde la url sea un parámetro válido, pudiendo generar una alteración en el flujo de la aplicación, control de un recurso específico o ejecución de código no deseado.
+
+## Plataformas aplicables
+
+La vulnerabilidad se aplica sobre cualquier plataforma.
+
+## Impacto
+
+Afecta la Confidencialidad
+
+## Prueba de concepto (PoC)
+
+1. Una vez logueados, yendo a la url “.../_AltoroJ/bank/main.jsp_”, podemos seleccionar una de nuestras cuentas para ver los detalles de la misma.
+2. Si se selecciona una cuenta y apreta el boton “Go”, la aplicacion nos redirige a la direccion “AltoroJ/bank/showAccount?listAccounts=800002” la cual nos muestra los detalles de la cuenta que se especifique en el parámetro _listAccounts._
+3. Si probamos modificar este número directamente desde la url del navegador, podemos probar ingresar un número negativo, u otro dato que no sea el esperado por la aplicación.
+4. Ingresando “-1” por ejemplo lleva a la aplicación a una excepción no manejada, ya que se intenta acceder a los detalles de una cuenta inexistente.
+
+### Evidencia de vulnerabilidad encontrada:
+
+**Url “.../_AltoroJ/bank/main.jsp_”:**  
+**![][image5]**  
+**Url “AltoroJ/bank/showAccount?listAccounts=-1”**
+
+## Mitigación
+
+Para realizar la mitigación se debe garantizar que el parámetro usado para realizar la operación de obtener detalles de una cuenta, sea válido.  
+En este caso se decidió realizar la comprobación en el loop que recorre todas las cuentas del usuario en la cookie. Si hay una cuenta que coincide con el parámetro ingresado, se guarda la cuenta, para luego realizar las diferentes operaciones \- ver saldo, historial de transacciones, etc \-. De esta manera evitamos el acceso a un atributo de una variable nula, a la vez que aseguramos que el usuario tiene permisos para ver dicha cuenta.
+
+### Evidencia mitigación en codigo fuente
+
+En el archivo ubicado en /WebContent/bank/balance.jsp:
+
+- En la línea 42 se inicializa la variable que será utilizada para desplegar condicionalmente el contenido html.
+- En las líneas 45 y 46 dentro del loop for, se guarda la cuenta que coincida con el parámetro.
+- En la línea 61 se despliegan los detalles, sí se encontró la cuenta, si no se ejecuta la línea 133\.
+
+---
+
+# Vulnerabilidad 4: CWE-78: Improper Neutralization of Special Elements used in an OS command (‘OS Command Injection’)
+
+## Descripción
+
+La aplicación ejecuta un comando shell con el contenido que llega en el parámetro “ _content_ ” en la página index.jsp.  
+Ya que el parámetro no es sanitizado antes de ejecutar el comando, puede llevar a que el usuario desde el navegador ingrese un comando shell específico y se ejecute en el servidor web.
+
+## Descripción extendida:
+
+CWE-78 o ‘OS Command Injection’ permite que un atacante escriba y ejecute comandos del sistema operativo donde se aloja la página, permitiendo ganar acceso al mismo, incluso con permisos que comúnmente el usuario no tiene.  
+El parámetro content que se ingresa en la url permite saber a la aplicación cuál página de todas las alojadas en el servidor debe ser obtenida y desplegada al usuario. El problema es que esa entrada no es sanitizada antes de ejecutar el comando, permitiendo a un usuario con malas intenciones ganar acceso al sistema operativo del servidor.
+
+## Plataformas aplicables
+
+La vulnerabilidad se aplica sobre cualquier plataforma en la cual los comandos ingresados sean compatibles con el sistema operativo en donde esté alojada.
+
+## Impacto
+
+Integridad. Mediante el borrado y modificación de archivos y carpetas de directorios donde se ejecuta la aplicación.  
+Confidencialidad. Acceso a datos confidenciales guardados en los directorios del sistema operativo.  
+Disponibilidad. Parar o reanudar el servicio.
+
+## Prueba de concepto (PoC)
+
+1. En la página principal de la aplicación, si vamos a la sección “personal” podemos observar que en la url aparece un parámetro “content”, en este caso toma el valor “personal.htm” lo que sugiere que controla las vistas a ser desplegadas en el navegador. Probablemente buscando en el servidor el archivo o página solicitada.
+2. Si ingresamos cualquier comando shell de linux cuya respuesta sea algún tipo de visualización (contenido de archivos, lista de directorios, etc), podremos desplegar esa respuesta en nuestro navegador. Por ejemplo ‘;ls’ permite desplegar todos los archivos que se encuentran en la dirección que se encuentra la aplicación.
+   1. ‘;’ separa comandos shell. Permite que se ejecute luego de cualquier comando controlado por la aplicación.
+
+## Mitigación
+
+Para asegurar que ningún comando esté siendo ejecutado en nuestro sistema operativo, podemos sanitizar el parámetro que viene en la url antes de ejecutarlo.  
+Primero debemos eliminar cualquier carácter que permita separar comandos (;), luego debemos asegurarnos que contenga una sola palabra.  
+Archivo index.jsp:  
+De la línea 27 a 29 se realiza la sanitización, y en el “ if ” de abajo se chequea que la misma haya sido exitosa antes de ejecutar el comando en el sistema operativo.
+
+En este caso se decidió validar el parámetro dentro del index.jsp, ya que es la manera más rápida. En la práctica es más adecuado crear una clase externa que lleve a cabo todo el proceso de validación, quedando así el código más desacoplado.
+
+Si intentamos ejecutar nuevamente el comando mencionado:
+
+---
+
+# Vulnerabilidad 5: CWE-22 Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')
+
+## Descripción
+
+Existe un path traversal en el parámetro content de la página index.jsp.
+
+Un atacante puede modificar la ruta del archivo solicitado para acceder a archivos fuera del directorio permitido.
+
+El producto utiliza una entrada externa para construir un nombre de ruta que pretende  
+identificar un archivo o directorio que se encuentra debajo de un directorio principal  
+restringido, pero no se neutraliza correctamente los elementos especiales dentro del  
+nombre de ruta que pueden hacer que se resuelva en una ubicación que se encuentra  
+fuera del directorio restringido.
+
+## Descripción extendida:
+
+Muchas operaciones con archivos se realizan dentro de un directorio restringido. Este CWE, ocurre cuando una aplicación no valida correctamente las rutas de los archivos solicitados por el usuario. Esto permite que un atacante manipule las rutas de acceso, utilizando secuencias como \`../\`, para acceder a archivos fuera del directorio permitido. En esta vulnerabilidad, el sistema puede devolver archivos confidenciales ubicados en directorios superiores al que debería tener acceso el usuario.
+
+Por ejemplo, en una aplicación de descargas de archivos, un atacante podría enviar una solicitud con un parámetro de ruta modificado para intentar acceder a archivos sensibles del sistema, como el archivo de contraseñas o archivos de configuración.
+
+## Plataformas aplicables
+
+Cualquiera. Esta vulnerabilidad puede afectar a cualquier servidor web o sistema de archivos que permita la especificación de rutas de archivos sin una validación adecuada, y puede ser explotada en cualquier navegador o cliente que pueda enviar solicitudes de archivos.
+
+## Impacto
+
+- Integridad – Se pueden escribir o modificar archivos críticos si no existen controles adecuados.
+- Confidencialidad – Puede permitir obtener archivos privados del File System. Un atacante puede obtener acceso a archivos sensibles o confidenciales que normalmente estarían restringidos.
+- Disponibilidad – Modificar y eliminar archivos que produzcan un error en el producto.
+
+## Prueba de concepto (PoC)
+
+1. En la página principal de la aplicación, al seleccionar distintas secciones del indice de la izquierda, podemos ver como modifica la URL para visualizar la información buscada.  
+   Ej:
+
+- /AltoroJ/index.jsp?content=personal_deposit.htm
+- AltoroJ/index.jsp?content=personal_checking.htm
+
+2. Si modificamos el valor posterior al signo “=” e introducimos los siguientes directorios:
+
+- ../../../../../../../../../../../etc/passwd
+- ../WEB-INF/lib/ApacheLicense.txt  
+  Los cuales devuelven el archivo \`/etc/passwd\`, que contiene información confidencial del sistema en sistemas basados en Unix y la información de la licencia del servidor apache respectivamente. Archivos a los cuales no debería poder acceder el usuario
+
+![][image6]
+
+## Mitigación
+
+- Eliminación de secuencias de path traversal: Reemplacé secuencias como ../ y ..\\ en el parámetro content usando replaceAll para prevenir intentos de navegar fuera del directorio permitido.
+- Validación de lista blanca: Implementé una lista de archivos permitidos para que solo ciertos archivos puedan ser accedidos, mitigando posibles accesos no autorizados a archivos peligrosos.
+- Validación del path: Verifiqué que la ruta siempre comience con static/ para asegurar que los archivos solicitados solo provengan de ese directorio.
+
+![][image7]  
+En la línea 40 se añade un mecanismo para eliminar secuencias como ../ o ..\\ usando replaceAll(). Esto evita que el usuario navegue a directorios superiores o inferiores.
+
+La validación de lista blanca no la hicimos porque no sabíamos todas las rutas que había que aceptar.
+
+---
+
+# Vulnerabilidad 6: CWE-798 Use of Hard-Coded Credentials
+
+## Descripción
+
+El producto contiene credenciales codificadas de forma rígida, como una contraseña o clave criptográfica.
+
+En la página de administración de AltoroJ (/AltoroJ/admin/login.jsp), se utiliza una contraseña codificada directamente en el código fuente (Altoro1234). Esto permite a un atacante que acceda al código fuente obtener la clave de administración sin necesidad de ningún otro acceso adicional.
+
+## Descripción extendida:
+
+El uso de credenciales codificadas, ocurre cuando una aplicación tiene contraseñas u otras credenciales que se han escrito directamente en el código fuente o binarios. Esto es peligroso porque cualquiera que obtenga acceso al código fuente o a los binarios puede encontrar y usar estas credenciales para acceder a recursos críticos del sistema.
+
+En este caso, la contraseña administrativa de AltoroJ está directamente comentada en el código JSP de la página de inicio de sesión del administrador:
+
+\<\!-- Password: Altoro1234 →
+
+Este tipo de implementación pone en riesgo la confidencialidad y la integridad del sistema, ya que cualquier persona con acceso al código puede utilizar la contraseña sin autorización.
+
+## Plataformas aplicables
+
+Este problema es aplicable a cualquier plataforma donde las credenciales estén codificadas directamente en el código fuente, sin importar el lenguaje de programación o el tipo de aplicación. Puede ser explotado por cualquier atacante que tenga acceso al código fuente o incluso a los binarios compilados de la aplicación.
+
+## Impacto
+
+- Confidencialidad: Las credenciales codificadas pueden ser obtenidas por atacantes, permitiéndoles acceder a partes sensibles del sistema.
+- Integridad: Un atacante podría realizar cambios en la configuración del sistema o modificar datos sensibles utilizando las credenciales obtenidas.
+- Disponibilidad: Si un atacante compromete el sistema, podría afectar la disponibilidad de los servicios.
+
+Esta vulnerabilidad puede llevar a la exposición de recursos o funcionalidades a actores no deseados, lo que podría proporcionar a los atacantes información sensible o incluso la capacidad de ejecutar código arbitrario.
+
+Si la contraseña llega a ser descubierta o publicada (un hecho común en Internet), cualquier persona que tenga conocimiento de esta contraseña podrá acceder al producto. Finalmente, dado que todas las instalaciones del producto tendrán la misma contraseña, incluso en diferentes organizaciones, esto permite que se lleven a cabo ataques masivos, como los gusanos informáticos.
+
+## Prueba de concepto (PoC)
+
+1. En la interfaz de administración de AltoroJ (/AltoroJ/admin/login.jsp), se puede observar la siguiente línea en el código fuente:  
+   \<\!-- Password: Altoro1234 \--\>
+2. Un atacante con acceso al código fuente puede utilizar esta contraseña para acceder a la interfaz de administración sin conocimiento previo de las credenciales.
+
+## Mitigación
+
+Para mitigar esta vulnerabilidad, la contraseña no debe estar codificada en el código fuente. Debe estar almacenada en un archivo de configuración externo a la aplicación que pueda ser gestionado por la misma
+
+Para mitigar esta vulnerabilidad, lo que hicimos fue quitar la contraseña que se encontraba expuesta en el código y pasarlo a app.properties como se ve en la siguiente imagen. De todas formas, lo ideal sería no tener expuestas credenciales en ninguna parte del código, es mejor guardarla en un manejador de contraseñas que sea seguro.
+
+El archivo app.properties es propio de cada ambiente de desarrollo o producción. Además, es ignorado por los protocolos de control de versiones. Por ende, cuando otra persona acceda al código fuente del sistema, no encontrará acceso a la contraseña de administrador.
+
+![][image8]
+
+---
+
+# Vulnerabilidad 7: CWE-862 Missing Authorization
+
+## Descripción
+
+El producto no realiza una verificación de autorización cuando un actor intenta acceder a un recurso o realizar una acción.
+
+En la página de detalles de cuenta bancaria de AltoroJ, los usuarios autenticados pueden ver información de cuentas bancarias modificando manualmente el parámetro de la URL listAccounts, incluso si no tienen autorización para acceder a esas cuentas.
+
+## Descripción extendida:
+
+El CWE-862 ocurre cuando una aplicación permite a un usuario autenticado acceder a funciones o recursos sin verificar si tiene permiso para hacerlo. En la aplicación AltoroJ, un usuario autenticado como jsmith (quien debería tener acceso únicamente a las cuentas 800002 y 800003\) puede modificar manualmente el parámetro de la URL listAccounts y acceder a la información de la cuenta 800001, que no le pertenece.
+
+Este fallo se debe a la falta de controles de autorización en el servidor, que debería validar que el usuario autenticado tenga permiso para acceder a los recursos solicitados antes de devolver la información.
+
+Cuando no se aplican verificaciones de control de acceso, los usuarios pueden acceder a datos o realizar acciones que no deberían estar permitidas. Esto puede ocasionar una amplia variedad de problemas, incluyendo exposiciones de información, denegación de servicio y ejecución arbitraria de código.
+
+## Plataformas aplicables
+
+Este problema es aplicable a cualquier aplicación web que gestione múltiples recursos (como cuentas de usuarios) y no implemente correctamente los controles de autorización. Se puede explotar desde cualquier navegador o cliente que permita modificar la URL.
+
+## Impacto
+
+- Confidencialidad: Un usuario no autorizado puede acceder a información privada de otro usuario, como los detalles de las cuentas bancarias.
+- Integridad: Si el sistema también permite realizar modificaciones, un atacante podría manipular datos que no le pertenecen.
+
+## Prueba de concepto (PoC)
+
+1. Iniciar sesión en la aplicación AltoroJ con las credenciales de jsmith (Usuario: jsmith, Contraseña: demo1234).
+2. Navegar a la página de visualización de cuentas, que tiene la siguiente URL: http://localhost:8080/AltoroJ/bank/showAccount?listAccounts=800002
+3. Aquí, 800002 es el número de cuenta que pertenece al usuario jsmith.
+4. Modificar el parámetro listAccounts en la URL para intentar acceder a una cuenta que no pertenece al usuario, por ejemplo:  
+   http://localhost:8080/AltoroJ/bank/showAccount?listAccounts=800001
+5. La información de la cuenta 800001 (que no pertenece a jsmith) es visible
+6. Este comportamiento confirma que el sistema no verifica correctamente si el usuario tiene autorización para acceder a la cuenta 800001, lo que implica una vulnerabilidad de Falta de autorización.
+
+![][image9]  
+![][image10]
+
+## Mitigación
+
+Para mitigar este problema, se deben implementar controles de autorización adecuados en el servidor. Específicamente:
+
+- Al recibir una solicitud para ver o modificar un recurso (como la cuenta bancaria), el servidor debe verificar que el usuario autenticado tenga permiso para acceder a ese recurso.
+- Cada solicitud debe ser validada en función del usuario autenticado y los permisos asociados a dicho usuario.
+
+En este caso, antes de mostrar los detalles de una cuenta bancaria, el sistema debería comprobar que el usuario autenticado tiene los derechos necesarios para acceder a esa cuenta, bloqueando el acceso si no tiene los permisos.
+
+Para este caso, tomamos el valor del user y en función del mismo pedimos todas las cuentas asociadas a ese user. Luego observamos el valor que hay en acctID en el URL y verificamos si dicho valor coincide con alguna de las cuentas previamente verificadas para ese usuario. Si coincide, muestra la información sin problemas. En caso de que no, se le indica que no tiene permisos para acceder a esa cuenta como se muestra a continuación.
+
+![][image11]
+
+![][image12]
+
+El código implementado en balance.jsp fue el siguiente:
+
+export const copyText = 
+`
+<%
+com.ibm.security.appscan.altoromutual.model.User user \= (com.ibm.security.appscan.altoromutual.model.User) request.getSession().getAttribute("user");
+ArrayList\<Account\> accounts \= new ArrayList\<Account\>(Arrays.asList(user.getAccounts())); // Obtener todas las cuentas del usuario
+
+    java.lang.String paramName \= request.getParameter("acctId");
+
+    String accountName \= null;
+
+    boolean hasAccess \= false;
+    for (Account account : accounts) {
+        if (String.valueOf(account.getAccountId()).equals(paramName)) {
+            hasAccess \= true;
+            accountName \= account.getAccountId() \+ " " \+ account.getAccountName();
+            break;
+        }
+    }
+    if (\!hasAccess) {
+
+%\>
+\<h1\>No tienes permiso para acceder a esta cuenta.\</h1\>
+\<%
+return;
+}
+%\>
+
+`;
+
+<div className="text-to-copy rounded-lg bg-slate-400 border border-gray-400">
+
+<Clipboard text={copyText} />
+
+```
+<%
+
+com.ibm.security.appscan.altoromutual.model.User user \= (com.ibm.security.appscan.altoromutual.model.User) request.getSession().getAttribute("user");
+ArrayList\<Account\> accounts \= new ArrayList\<Account\>(Arrays.asList(user.getAccounts())); // Obtener todas las cuentas del usuario
+
+    java.lang.String paramName \= request.getParameter("acctId");
+
+    String accountName \= null;
+
+    boolean hasAccess \= false;
+    for (Account account : accounts) {
+        if (String.valueOf(account.getAccountId()).equals(paramName)) {
+            hasAccess \= true;
+            accountName \= account.getAccountId() \+ " " \+ account.getAccountName();
+            break;
+        }
+    }
+    if (\!hasAccess) {
+
+%\>
+\<h1\>No tienes permiso para acceder a esta cuenta.\</h1\>
+\<%
+return;
+}
+%\>
+
+```
+
+</div>
+
+# Vulnerabilidad 8: CWE-306 Missing Authorization For Critical Function
+
+## Descripción
+
+La API de AltoroJ que permite ver los detalles de una cuenta específica, no posee los suficientes mecanismos de verificación para comprobar la identidad del usuario que intenta acceder al recurso.
+
+## Descripción extendida
+
+Existe una API desarrollada por la aplicación, que permite visualizar datos críticos de los clientes. En este caso se trata de datos de una cuenta en específico (balance, historial de transacciones, etc).
+La vulnerabilidad se encuentra al momento de autorizar a un usuario a acceder a estos detalles, la cual solamente verifica que el usuario esté logueado (mediante un token en el header de la petición). Por lo tanto, un usuario cualquiera puede acceder a los datos de la cuenta de otra persona.
+Ejemplo de URL: “http://localhost:8080/AltoroJ/api/account/800001”
+
+## Plataformas aplicables
+
+Aplicable en cualquier lenguaje.
+Aplicable en tecnologias Cloud y ICS/OT
+
+## Impacto
+
+Confidencialidad: Los datos criticos de usuarios son expuestos a terceros.
+
+## Prueba de Concepto (PoC)
+
+Se utilizó la URL “[http://localhost:8080/AltoroJ/api/account/800001](http://localhost:8080/AltoroJ/api/account/800001)” para realizar la prueba de concepto. Se necesita estar previamente logueado en una cuenta de la aplicación.
+
+1. Para loguearse se hizo una petición POST a la api de logueo \- [http://localhost:8080/AltoroJ/api/](http://localhost:8080/AltoroJ/api/account/800001)login \- con el nombre de usuario y contrase;a en el body.1
+2. La api devuelve un json con un token. El mismo va a ser usado para las peticiones posteriores.
+3. Haciendo una petición GET a “[http://localhost:8080/AltoroJ/api/account](http://localhost:8080/AltoroJ/api/account/800001)” \- con el token de sesión en el header \- se pueden ver las cuentas que posee el usuario.2
+4. Para probar la vulnerabilidad se puede hacer una petición GET de una cuenta que no pertenezca al usuario, por ejemplo la 800001, en la url “[http://localhost:8080/AltoroJ/api/account/800001](http://localhost:8080/AltoroJ/api/account/800001)”.3
+5. Podemos comprobar que la API igualmente devuelve los detalles de la cuenta especificada. Vulnerabilidad expuesta.4
+
+## Mitigación
+
+Para este caso se implementó una mitigación a nivel de código, creando una validación manual del parámetro que llega a la API, comparando con el id de las cuentas que el usuario posee.
+
+Se creó una variable llamada “_ok_” de tipo booleana inicialmente en “_false_”, y luego en el loop que recorre las cuentas del usuario, si hay un número que coincide, la cambiamos a “_true_”.
+
+Luego, en el bloque “_try_” que ya estaba implementado en el código, antes de devolver cualquier dato en la respuesta, chequeo que la variable “ok” sea “true” \- significa que hay una cuenta del usuario con ese número \-. Si es “_false_” se devuelve un mensaje de error, si no se sigue con el comportamiento normal y se devuelven los datos.
+Probando nuevamente acceder a una cuenta que no es del usuario por consola:
+
+[image1]: "/project-images/cwe/image1.png"
+[image2]: /project-images/cwe/image2.png
+[image3]: /project-images/cwe/image3.png
+[image4]: /project-images/cwe/image4.png
+[image5]: /project-images/cwe/image5.png
+[image6]: /project-images/cwe/image6.png
+[image7]: /project-images/cwe/image7.png
+[image8]: /project-images/cwe/image8.png
+[image9]: /project-images/cwe/image9.png
+[image10]: /project-images/cwe/image10.png
+[image11]: /project-images/cwe/image11.png
+[image12]: /project-images/cwe/image12.png
+[image13]: /project-images/cwe/image13.png
+[image14]: /project-images/cwe/image14.png
+[image15]: /project-images/cwe/image15.png
+[image16]: /project-images/cwe/image16.png
+[image17]: /project-images/cwe/image17.png
+[image18]: /project-images/cwe/image18.png
+[image19]: /project-images/cwe/image19.png
+[image20]: /project-images/cwe/image20.png
+[image21]: /project-images/cwe/image21.png
+[image22]: /project-images/cwe/image22.png
+[image23]: /project-images/cwe/image23.png
+[image24]: /project-images/cwe/image24.png
+
+```
+
+```
