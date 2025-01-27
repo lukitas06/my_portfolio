@@ -25,7 +25,6 @@ export default async function Project() {
                                 title={project.title}
                                 description={project.description}
                                 image={project.image}
-                                codeLink={project.codeLink}
                                 detailsLink={project.detailsLink}
                             />
                         ))}
@@ -37,7 +36,6 @@ export default async function Project() {
                                 title={project.title}
                                 description={project.description}
                                 image={project.image}
-                                codeLink={project.codeLink}
                                 detailsLink={project.detailsLink}
                             />
                         ))}
@@ -54,7 +52,6 @@ export default async function Project() {
                                 title={project.title}
                                 description={project.description}
                                 image={project.image}
-                                codeLink={project.codeLink}
                                 detailsLink={project.detailsLink}
                             />
                         ))}
@@ -66,7 +63,6 @@ export default async function Project() {
                                 title={project.title}
                                 description={project.description}
                                 image={project.image}
-                                codeLink={project.codeLink}
                                 detailsLink={project.detailsLink}
                             />
                         ))}

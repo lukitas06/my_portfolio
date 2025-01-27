@@ -1,10 +1,11 @@
 'use client'
-
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function ProjectCard({ title, description, image, codeLink }: { title: string, description: string, image: string, codeLink: string, detailsLink: string }) {
+export default function ProjectCard({ title, description, image, detailsLink }: { title: string, description: string, image: string, detailsLink: string }) {
 
     const [isOpen, setIsOpen] = useState(false);
+    const router = useRouter()
 
     const open = () => {
         setIsOpen(true);
@@ -13,13 +14,13 @@ export default function ProjectCard({ title, description, image, codeLink }: { t
         setIsOpen(false);
     };
 
-    const goToCode = (url: string) => {
-        // router.push(codeLink);
-        console.log(url);
+    const goDetails = (url: string) => {
+        router.push(url);
+        // console.log(url);
     }
 
     return (
-        <div onClick={() => goToCode(codeLink)} onMouseEnter={open} onMouseLeave={close} className="relative projectCard flex flex-col items-center justify-center bg-white w-80 h-fit rounded-xl hover:scale-110 hover:rounded-xl">
+        <div onClick={() => goDetails(detailsLink)} onMouseEnter={open} onMouseLeave={close} className="relative projectCard flex flex-col items-center justify-center bg-white w-80 h-fit rounded-xl hover:scale-110 hover:rounded-xl">
             <div className="image-div w-full h-1/2 aspect-w-16 aspect-h-9">
                 <img src={image} alt="Imagen del proyec" className="z-10 w-full h-48 object-cover rounded-t-xl" />
             </div>

@@ -1,0 +1,540 @@
+import Clipboard from "@/app/ui/clipboard";
+
+<div className="project-image">
+  **![Imagen1](/project-images/cwe/image1.png)**
+</div>
+
+<div className="project-title">
+
+# **Vulnerabilities mitigation in Juice Shop**
+
+</div>
+
+<div className="signature-info">
+
+**Ingeniería en Informática**  
+**Desarrollo Seguro**
+
+---
+
+**Integrantes:**
+
+- Jose Varela
+- Nicolas Rodriguez
+- Lucas Alegre
+
+**Docentes:**
+
+- Mauro Flores
+- Sebastian Mazzey
+
+</div>
+
+# Introduction
+
+OWASP Juice Shop is a deliberately insecure web application, which in this case allows you to demonstrate your skills in detecting and exploiting vulnerabilities.
+Its goal is to exploit these weaknesses, generating sufficient evidence of your work.
+
+# Purpose
+
+Select at least 10 of the OWASP Juice Shop challenges.
+For each of the selected exercises, describe the following:
+
+- What is the flaw that made it possible.
+- Classify it in the OWASP Top 10 category that you consider appropriate.
+- How you were able to identify it. Detail the steps for its exploitation.
+- Provide a recommendation for correcting said vulnerability.
+
+<div className= "owasp-section">
+
+# Multiple likes
+
+## **Description**
+
+In the backend of the website there is a defect that allows the same user to give several likes to the same review, in the normal procedure when we like a review it does not allow us to add more likes.
+
+## **Context**
+
+The defect is that in the api, where the different business operations are processed, in this case liking the reviews of a product, in this case the backend does not validate the moment of adding a like to a review if the operation was previously done, all this in a very short range of time, if we try to like it simulating the request with some programming language or using tools like postman we will have no problem liking the review the first time, but after about 150ms we will not be able to add more likes since the application will return a 403 (not allowed), however if with a programming language we send several requests at the same time (before 150ms) the api will not return a 403 but will allow us to add the amount of likes we want.
+
+## **Classification**
+
+This defect is in category A01:2021 – Allows us to momentarily access business logic that we should not: Broken Access Control
+
+## **Detection**
+
+The first step was to identify what request was made when liking a review using the network tab in the browser and how it was composed. It was identified that it was a POST request in the rest/products/reviews path with a body containing the review id as well as the authentication token. Once the request was identified, we tried to replicate the behavior using postman. By executing the request, we realized that the first request we made was executed correctly and the like was successful. When we made another request, the backend returned a 403.
+
+### In postman:
+
+![][image2]
+
+### Javascript Code:
+
+![][image3]
+
+### Code execution results:
+
+![][image4]
+
+## **Recomendation**
+
+The recommendation for this case is to use some kind of message queue for the likes in the reviews, this way we can guarantee that several identical requests are not processed at the same time, and in case there is more than one identical request, return a 403 as is currently done.
+
+</div>
+
+<div className= "owasp-section">
+# Payback time
+
+## **Description**
+
+There is a defect on the website that allows a user to place an order that, instead of deducting the amount that the item costs, deposits money into the account.
+
+## **Context**
+
+The defect is that in the API, where the different business operations are processed, in this case adding products to the cart, the product quantity parameter is not validated. Although negative quantities are not allowed from the frontend side, if I know the URL where products are added to the cart, and it is intercepted using a proxy, I can modify this parameter and enter a negative amount.
+What happens? If a negative amount is entered, when calculating the total amount of the purchase, the result is negative, and when I try to subtract this number from the account funds, it gives me a positive number, and in this way money enters the account.
+Example:
+
+- Account funds: $100
+- Quantity of the selected product: -20000
+- Product price: $1
+- Amount to pay: -20000 x 1 = $-20000
+- Account debit: $100 - ($-20000) = $+20100
+
+## **Classification**
+
+This defect is in category A03:2021 – Injection, since it is a type of injection that is not controlled on the server side: Improper Input Validation
+
+## **Identification**
+
+The first step was to perform a normal purchase process and intercept each step with zap (adding a product to the cart, checkout, etc.) to identify all the requests to the API (url, request and response).
+A POST request to the URL ".../api/BasketItems/" was identified with a body with the following format: `{"ProductId":24,"BasketId":"1","quantity":1}`.
+Using the Fuzz tool - it allows sending customized payloads - the quantity specified in the “quantity” attribute was changed to take a negative value and the request was sent.
+
+### In that way:
+
+![][image5]
+
+### And the result was
+
+![][image6]
+
+The $17,800 indicated in the first image was obtained.
+
+## **Recomendation**
+
+The recommendation in these cases of problems is always to validate the parameters or attributes that come from the frontend before carrying out any business operation.
+In this case, the number of items of the product to be purchased should not be negative, and should not be greater than the stock of the same in the store.
+
+</div>
+
+<div className= "owasp-section">
+
+# Zero Stars
+
+## **Description**
+
+Due to this flaw, a malicious user can generate zero-star feedback, catastrophically affecting the store.
+
+## **Context**
+
+The content contained in the body of a request is not being validated on the server side. Using a proxy, the content can be modified and a rating with a value of 0 can be added, which cannot be done from the browser.
+
+## **Classification**
+
+A03:2021 – Injection, is a type of injection that is not validated on the server side: Improper Input Validation.
+
+## **Identification**
+
+First, a test feedback was performed, so that the URL and body could be intercepted with ZAP and displayed.
+Then, in ZAP, a breakpoint was added to that URL so that the body could be intercepted and modified before it reached the API.
+Another feedback was performed, and in ZAP the “rating” attribute was modified to take a value of zero.
+API response:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "id": 10,
+    "UserId": 23,
+    "comment": "Le doy un cero jeje (***eba@gmail.com)",
+    "rating": 0,
+    "updatedAt": "2024-10-04T15:20:45.884Z",
+    "createdAt": "2024-10-04T15:20:45.884Z"
+  }
+}
+```
+
+## **Recomendation**
+
+Validate all data coming from the “browser” from the server, because the restrictions applied on the frontend are not sufficient to guarantee that business operations are carried out within the accepted parameters.
+
+</div>
+
+<div className= "owasp-section">
+
+# Login Admin
+
+## **Description**
+
+This flaw allows anyone to log in as an administrator, gaining their permissions.
+
+## **Context**
+
+Basically, this flaw consists of not correctly parameterizing the data coming from the frontend when making a query to the database. In this way, a malicious user can log in as administrator, entering a certain SQL statement instead of their username.
+
+## **Classification**
+
+This defect is in category A03:2021-Injection, since it is an SQL language injection that is introduced into the input.
+
+## **Identification**
+
+It was simply verified that a simple SQL injection was used such as “ ‘or 1=1 --’ ” as the user, the password does not really matter.
+The two dashes at the end of the command (--) are used to write a comment in the SQL format, thus ignoring all subsequent commands that the application executes.
+As a result, the administrator login was obtained:
+
+![][image7]
+
+## **Recomendations**
+
+First, all inputs coming from the frontend must be parameterized before performing any operation on the database.
+To add more security, the element to be introduced in the query must be sanitized, for example in this case, the user names cannot have special characters or spaces.
+
+</div>
+
+<div className= "owasp-section">
+
+# Login Bender
+
+## **Description**
+
+In this case the idea is to be able to log in using the Bender account.
+
+## **Context**
+
+In this case it was possible to log in with the Bender user since the login allows SQL injection.
+
+## **Classification**
+
+A03:2021 – Injection, is a type of Improper Input Validation
+
+## **Identification**
+
+Using exploit number 9 we were able to obtain the email of the user Bender, with the email what we did was log in with the user bender@juice-sh.op'-- and in password anything, this allowed us to enter with the user even if we do not know the user's password.
+
+![][image8]
+
+## **Recomendation**
+
+It is vital to have good input validation to avoid SQL injections.
+
+</div>
+
+<div className= "owasp-section">
+
+# Admin Registration
+
+## **Description**
+
+Due to this flaw, any person can register with administrative privileges in the application.
+
+## **Context**
+
+By default, when a user registers, the application assigns a fixed role (customer). The problem is that if the body of the registration request is modified using SSRF, and a “role” attribute is added: “admin”, the application assigns this role to the user. This is probably because the application is not properly checking the content that comes in the body of the request, and the attribute is being added to the SQL statement.
+
+## **Classification**
+
+A03:2021 – Injection, is a type of Improper Input Validation
+
+## **Identification**
+
+First, we needed to know what attributes the request and response bodies have in common, in order to identify any related to user roles.
+We tested the login as administrator, with the SQL injection demonstrated above, and obtained a token as a response. When decoding it on the jwt.io page, we obtained the following payload:
+
+![][image9]
+
+It was later identified that when creating a user, the application does not send the user's role in the body of the request to the API, but instead the user is created by default with the role of "customer".
+It was simply attempted to add one more attribute to the body, so that the request would be as follows:
+
+```json
+{
+  "email": "prueba@gmail.com",
+  "password": "holahola",
+  "passwordRepeat": "holahola",
+  "securityQuestion": {
+    "id": 2,
+    "question": "Mother's maiden name?",
+    "createdAt": "2024-10-04T14:33:57.510Z",
+    "updatedAt": "2024-10-04T14:33:57.510Z"
+  },
+  "securityAnswer": "Nose",
+  "role": "admin"
+}
+```
+
+### And it worked:
+
+![][image10]
+
+## **Recomendation**
+
+First of all, it is vital to have a defined structure of the content that should be included in the body of a request, this way it can be compared and an error returned if it is not correct.
+Then, for the login process, register the users with the “customer” type by default always, and if an administrator type user must be created, do it in another way (inserting it directly into the database for example)
+
+</div>
+
+<div className= "owasp-section">
+# User Credentials
+
+## **Description**
+
+Because of this flaw, a malicious user can modify a parameter of a query that searches for information in a database, and obtain all the data in the users table.
+
+## **Context**
+
+On the main page, in the input that exists to search for products, the content that the user enters is not properly parameterized when performing a SQL query in the database.
+In this way, SQL statements can be injected into the original statement, thus modifying its result.
+
+## **Classification**
+
+A03:2021 – Injection.
+
+## **Identification**
+
+First, an input was identified that allows the user to enter data and perform a search for products in the URL ` .../rest/products/search?q=<text>`.
+If
+
+```
+‘))UNION SELECT \* FROM Users
+```
+
+is inserted in the parameter “q”, the following result is obtained:
+
+![][image11]
+
+We realize that the number of attributes returned by the first select and the second are not equal, therefore the union cannot be made.
+We kept testing, increasing the number of attributes in the SELECT until we reached the following parameter: “')) UNION SELECT 1,2,3,4,5,6,7,8,9 FROM Users --” and we get data, but it is product data.
+With this data, we modified the attributes that we want to get from the users table, taking as a reference the payload of the jwt of defect 8, until we got to: “
+‘)) UNION SELECT id,username,email,password,role,6,7,8,9 FROM Users -- ” obtaining:
+
+![][image12]
+
+For example, the first object in the response is
+
+```json
+{
+  "id": 1,
+  "name": "",
+  "description": "admin@juice-sh.op",
+  "price": "0192023a7bbd73250516f069df18b500",
+  "deluxePrice": "admin",
+  "image": "",
+  "createdAt": "",
+  "updatedAt": "assets/public/images/uploads/defaultAdmin.png",
+  "deletedAt": ""
+}
+```
+
+where “description” is the email and “price” is the user’s hashed password.
+
+## **Recomendation**
+
+Same as the flaws addressed above, parameterize the queries and sanitize the parameters coming from the browser before performing any SQL queries.
+
+</div>
+
+<div className= "owasp-section">
+
+# View Basket
+
+## **Description**
+
+This flaw allows a logged in user to view another user's shopping cart.
+
+## **Context**
+
+The server verifies that the user is authenticated (logged in) to view the cart, using a token sent in the request header. But the problem is that it does not verify that the user ID entered in the token is the same as the one specified in the URL.
+
+## **Classification**
+
+A01:2021 – Loss of Access Control, as it is a problem related to access control and user authorization.
+
+## **Identification**
+
+First, the URL to which the application sends the request to obtain the products in the cart was identified, through the observation of requests in ZAP:
+“ …/rest/basket/6 ” since the logged in user has the id 6.
+Then a breakpoint was established in that URL, and the cart was accessed again.
+The request was intercepted and the id specified in the URL was modified:
+Modified URL: “ …/rest/basket/1 ”,
+
+Response:
+
+![][image13]
+
+On the website:
+
+![][image14]
+
+## **Recomendation**
+
+In addition to validating that the user is logged in, another method must be added that accesses the token payload and verifies that the user ID is the same as the one coming through the route, in this way it is ensured that a user only accesses his shopping cart.
+
+</div>
+
+<div className= "owasp-section">
+
+# Manipulate basket
+
+## **Description**
+
+This defect allows a product to be added to another user's cart.
+
+## **Context**
+
+The server verifies that the user that arrives in the token is the same as the owner of the cart, but the problem is that it allows many parameters with the same name.
+In this way, the application can interpret the values ​​in an unanticipated way.
+In this case, if we send a body with two “basketId” attributes, the application will check the first one, but will not correctly sanitize the second one, thus achieving execution with the second id.
+
+## **Classification**
+
+A01:2021 – Loss of Access Control.
+
+## **Identification**
+
+Reading the OWASP page in search of a clue or idea on how to bypass the control, the following URL was found: https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/04-Testing_for_HTTP_Parameter_Pollution.
+It explains the term “HTTP Parameter Pollution”, where payloads with duplicate attributes are generated, causing the application to identify values ​​incorrectly.
+Knowing this, the URL of the API in which products are added to the cart was identified. Then another request was intercepted and the “BasketId” attribute was duplicated.
+
+Request:
+
+```json
+{
+  "ProductId": 25,
+  "BasketId": "6",
+  "BasketId": "1",
+  "quantity": 1
+}
+```
+
+Response:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "id": 10,
+    "ProductId": 25,
+    "BasketId": "1",
+    "quantity": 1,
+    "updatedAt": "2024-10-05T00:47:32.426Z",
+    "createdAt": "2024-10-05T00:47:32.426Z"
+  }
+}
+```
+
+## **Recomendation**
+
+A first solution would be to validate the inputs that the server receives, checking the length of the parameters, the types and formats allowed. It would also be possible to use “white lists” in which the values ​​allowed by the server are specified.
+Another could be to configure the web server to safely handle repeated parameters, applying rules.
+
+</div>
+
+<div className= "owasp-section">
+
+# Forged review
+
+## **Description**
+
+This flaw allows a logged in user to create or edit a product review as if they were another user.
+
+## **Context**
+
+As with other defects found, the server side is not validating that the authenticated user making the request is the same one to whom the business operation is directed. In the case of creating the review, the email that appears in the token is not compared with the email that appears in the body of the request. In the case of editing the review, it is not validated that the review being edited belongs to the user that appears in the token.
+
+## **Classification**
+
+A01:2021 – Loss of Access Control
+
+## **Identification**
+
+Basically, the API URL where the operations of creating and editing a review are performed was identified, using a test email from the website.
+Then, breakpoints were established at those points and the requests were intercepted. In the case of creation, the “author” attribute was modified to take the value “admin@juice-sh.op” and in the case of editing the review, the “id” attribute was modified to take the value of the previously created review.
+In this way, logged in with the email “prueba@gmail.com” I can create and edit reviews as if I were the admin user.
+
+**Creating the review:**
+
+Request:
+
+```json
+{
+  "message": "Intentando ponersela a otro. Te jodiste admin",
+  "author": "admin@juice-sh.op"
+}
+```
+
+Response:
+
+```json
+{ "status": "success" }
+```
+
+**Editing the review**
+
+Request:
+
+```json
+{
+  "id": "pbdY34KiDqrrq6DcL",
+  "message": "Editando desde prueba la review de admin"
+}
+```
+
+Response:
+
+```json
+{
+  "modified": 1,
+  "original": [
+    {
+      "product": "6",
+      "message": "Intentando ponersela a otro. Te jodiste admin",
+      "author": "admin@juice-sh.op",
+      "likesCount": 0,
+      "likedBy": [],
+      "_id": "pbdY34KiDqrrq6DcL"
+    }
+  ],
+  "updated": [
+    {
+      "product": "6",
+      "message": "Editando desde prueba la review de admin",
+      "author": "admin@juice-sh.op",
+      "likesCount": 0,
+      "likedBy": [],
+      "_id": "pbdY34KiDqrrq6DcL"
+    }
+  ]
+}
+```
+
+## **Recomendation**
+
+As with the other flaws found in this category, create a method that accesses the token and validates that the user appearing in it has permissions to perform these operations. For example, access all of the reviews and compare the ID of each one with the ID that is being attempted to be edited.
+
+</div>
+
+[image1]: /project-images/cwe/image1.png
+[image2]: /project-images/owasp/image2.png
+[image3]: /project-images/owasp/image3.png
+[image4]: /project-images/owasp/image4.png
+[image5]: /project-images/owasp/image5.png
+[image6]: /project-images/owasp/image6.png
+[image7]: /project-images/owasp/image7.png
+[image8]: /project-images/owasp/image8.png
+[image9]: /project-images/owasp/image9.png
+[image10]: /project-images/owasp/image10.png
+[image11]: /project-images/owasp/image11.png
+[image12]: /project-images/owasp/image12.png
+[image13]: /project-images/owasp/image13.png
+[image14]: /project-images/owasp/image14.png

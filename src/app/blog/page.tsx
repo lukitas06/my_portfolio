@@ -1,6 +1,7 @@
 
 import ProjectCard from '@/app/ui/projectCard';
-import { security } from '@/lib/articles/security';
+import { security } from '@/lib/blog/articles/security';
+import { writeUps } from '@/lib/blog/projects/cardsContent';
 
 const sections = [
     {
@@ -12,29 +13,7 @@ const sections = [
         link: '#cibersecurity',
     },
 ];
-const writeUps = [
-    {
-        title: 'OWASP Juice Shop',
-        text: 'OWASP Juice Shop is an intentionally insecure web application that is great for learning about web application security. It is a great way to practice your hacking skills in a legal environment.',
-        detailsLink: 'writeups/owasp-juice-shop',
-        codeLink: 'todaviaNada',
-        image: '/writeups-images/juiceshop.png'
-    },
-    {
-        title: 'CWE Mitigations',
-        text: 'The Common Weakness Enumeration (CWE) is a list of common software security weaknesses. This write-up covers some of the most common CWEs and how to mitigate them.',
-        detailsLink: 'writeups/cwe-mitigations',
-        codeLink: 'todaviaNada',
-        image: '/writeups-images/CWE.png',
-    },
-    {
-        title: 'CTF Write-ups',
-        text: 'Capture The Flag (CTF) competitions are a great way to practice your hacking skills. This write-up covers some of the most popular CTF challenges and how to solve them.',
-        detailsLink: 'writeups/ctf-writeups',
-        codeLink: 'todaviaNada',
-        image: '/writeups-images/picoctf.jpg',
-    }
-];
+
 export default async function Blog() {
 
     return (
@@ -55,7 +34,6 @@ export default async function Blog() {
                                 title={writeUp.title}
                                 description={writeUp.text}
                                 image={writeUp.image}
-                                codeLink={writeUp.codeLink}
                                 detailsLink={writeUp.detailsLink}
                             />
                         ))}
@@ -67,7 +45,6 @@ export default async function Blog() {
                                 title={writeUp.title}
                                 description={writeUp.text}
                                 image={writeUp.image}
-                                codeLink={writeUp.codeLink}
                                 detailsLink={writeUp.detailsLink}
                             />
                         ))}
