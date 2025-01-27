@@ -19,11 +19,3 @@ export function OrderedList({ title, text }: { title: string, text: string }) {
         )
     }
 }
-
-export function UnorderedList({ title, text }: { title: string, text: string }) {
-
-    return (
-        <div></div>
-    )
-
-}

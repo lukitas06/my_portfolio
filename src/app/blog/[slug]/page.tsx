@@ -2,13 +2,6 @@
 
 import '@/app/styles/project.css'
 
-interface Post {
-    title: string;
-    description: string;
-    image: string;
-    codeLink: string;
-    detailsLink: string;
-}
 
 export default async function ProjectDetails({
     params,
