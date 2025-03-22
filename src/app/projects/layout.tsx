@@ -1,4 +1,6 @@
 import BackBtn from "../ui/backBtn"
+import ScrollBtn from '@/app/ui/scrollBtn';
+
 
 export default function ProjectLayout({
     children,
@@ -9,6 +11,7 @@ export default function ProjectLayout({
 
         <section>
             <BackBtn />
+            <ScrollBtn />
             <h1 className="text-white text-2xl">NOT IMPLEMENTED YET</h1>
             {children}
         </section>

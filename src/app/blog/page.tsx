@@ -2,6 +2,7 @@
 import ProjectCard from '@/app/ui/projectCard';
 import { security } from '@/lib/blog/articles/security';
 import { writeUps } from '@/lib/blog/projects/cardsContent';
+import '@/app/styles/blog.css';
 
 const sections = [
     {
@@ -63,7 +64,7 @@ export default async function Blog() {
 function AboutCard(index: number, img: string, title: string, link: string) {
     console.log(link);
     return (
-        <div key={index} className='flex flex-col w-72 md:w-96 mb-10 bg-[#404040]'>
+        <div key={index} className='sec-article-card flex flex-col w-72 md:w-96 mb-10 bg-[#404040]'>
             <div className='card-img'>
                 <img className='object-fill h-56 w-full' src={img} alt="" />
             </div>

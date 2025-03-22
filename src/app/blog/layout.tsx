@@ -1,4 +1,6 @@
 import BackBtn from "../ui/backBtn"
+import ScrollBtn from '@/app/ui/scrollBtn';
+
 
 export default function BlogLayout({
     children,
@@ -8,6 +10,7 @@ export default function BlogLayout({
     return (
 
         <section>
+            <ScrollBtn />
             <BackBtn />
             {children}
         </section>

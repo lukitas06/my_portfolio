@@ -1,3 +1,26 @@
+@supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+
+    @keyframes slide-in-left {
+        from {
+          opacity: 0;
+          transform: translateX(-100%);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0px);
+        }
+      }
+      @keyframes slide-in-right {
+        from {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0px);
+        }
+      }
+}
 
 h1,h2,h3,h4,h5,h6{
     font-family: 'Roboto', sans-serif;
@@ -93,6 +116,9 @@ pre{
 	overflow: hidden;
 	background-color: rgb(255, 255, 255);
 }
+.row-list li:hover{
+    scale: 1.1;
+}
 .row-list li::before {
 	content: '';
 	display: block;
@@ -158,7 +184,27 @@ pre{
     margin: 30px 0 20px 0;
     padding: 10px 25px 20px 25px;
     place-self: center;
+
 }
+
+.phase:nth-child(odd){
+    animation: slide-in-right linear forwards;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+}
+.phase:nth-child(even){
+    animation: slide-in-left linear forwards;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+}
+
+.phase{
+    /* animation: slide-in-right linear forwards; */
+   
+}
+
+
+
 .phase ul{
     margin-bottom: 20px;
 }

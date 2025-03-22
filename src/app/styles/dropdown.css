@@ -1,0 +1,32 @@
+
+@supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+
+
+    @keyframes slide-in-left {
+        from {
+          opacity: 0;
+          transform: translateX(-100%);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0px);
+        }
+      }
+
+}
+
+.dropdown-div{
+    animation: slide-in-left linear forwards;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+}
+
+.dropdown-div:nth-child(1){
+    animation-delay: 0.5s;
+}
+.dropdown-div:nth-child(2){
+    animation-delay: 1s;
+}
+.dropdown-div:nth-child(3){
+    animation-delay: 1.5s;
+}

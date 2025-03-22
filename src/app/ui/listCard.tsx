@@ -11,7 +11,7 @@ export function OrderedList({ title, text }: { title: string, text: string }) {
     }
     else {
         return (
-            <li className=" flex flex-col items-start justify-around h-fit min-h-60">
+            <li className=" flex flex-col items-start justify-around h-fit min-h-60 ">
                 <h3 className="flex flex-row  items-center">{title}</h3>
                 <p className="text-center text-base">{text}</p>
             </li>

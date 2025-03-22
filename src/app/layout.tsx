@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import type { Viewport } from 'next';
+import ScrollBtn from '@/app/ui/scrollBtn';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +43,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased app-container`}
       >
         <Header />
+        <ScrollBtn />
         {children}
         <Footer />
       </body>

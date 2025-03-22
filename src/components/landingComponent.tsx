@@ -63,7 +63,7 @@ export default function LandingComponent() {
 
   return (
     <div className="flex justify-center items-center flex-col mb-36 w-full gap-8 lg:gap-32">
-      <div ref={ref} className='flex flex-col lg:flex-row p-12 justify-between items-center lg:px-28'>
+      <div ref={ref} className='flex flex-col lg:flex-row p-12 justify-between items-center lg:px-28 animate-fade-out-down [animation-timeline:scroll()] [animation-range:0px_300px] supports-no-scroll-driven-animations:animate-none'>
         <div className='flex flex-col gap-5 w-full align-center justify-center mt-11 mb-5'>
           <h1 className='text-7xl h-fit mt-30 text-center lg:text-start'><span className='text-4xl'>Hi, i am</span><br></br><span className='font-bold tracking-wide text-red-400'>Lucas Alegre</span><br></br><span className='text-3xl font-medium leading-tight'>Computer Engineering Student</span></h1>
           <button className='self-center md:self-start p-3 mt-3 border rounded-md flex flex-row gap-3 w-40 hover:scale-110 hover:border-blue-400'>Contact me <ArrowRightIcon className='h-6' /> </button>
@@ -72,10 +72,10 @@ export default function LandingComponent() {
       </div>
       <div ref={ref} className={`flex flex-col gap-12 p-10 w-full items-center `}>
         <div ref={proyectRef} className={`flex flex-col justify-center items-center gap-4 w-full transition-opacity ease-in duration-1000`}>
-          <h1 className='w-full text-center font-bold text-2xl mb-3'>What i do?</h1>
-          <div className='flex flex-col gap-5  lg:flex-row md:flex-wrap mb-14 justify-around md:items-center w-full '>
+          <h1 className='w-full text-center font-bold text-6xl mb-3 tracking-wide'>What i do?</h1>
+          <div className='flex flex-col gap-5 mb-14 justify-around items-center w-full '>
             {knowledge.map((card, index) => (
-              <Dropdown key={index} title={card.title} Icon={iconMapping[card.icon]} description={card.description} />
+              <Dropdown key={index} title={card.title} Icon={iconMapping[card.icon]} description={card.description} delay={index} />
 
             ))}
           </div>
