@@ -75,7 +75,7 @@ export default function LandingComponent() {
           <h1 className='w-full text-center font-bold text-6xl mb-3 tracking-wide'>What i do?</h1>
           <div className='flex flex-col gap-5 mb-14 justify-around items-center w-full '>
             {knowledge.map((card, index) => (
-              <Dropdown key={index} title={card.title} Icon={iconMapping[card.icon]} description={card.description} delay={index} />
+              <Dropdown key={index} title={card.title} Icon={iconMapping[card.icon]} description={card.description} />
 
             ))}
           </div>

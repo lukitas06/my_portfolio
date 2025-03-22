@@ -4,7 +4,7 @@ import { useState } from "react";
 import '@/app/styles/dropdown.css'
 
 
-export default function Dropdown({ title, Icon, description,delay }: { title: string, Icon: any, description: string[],delay:number }) {
+export default function Dropdown({ title, Icon, description }: { title: string, Icon: any, description: string[] }) {
     const [isOpen, setIsOpen] = useState(false);
 
     const open = () => {
