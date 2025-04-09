@@ -1,0 +1,59 @@
+import Dropdown from "@/app/ui/dropdown";
+import GoToBtn from "@/app/ui/goToBtn";
+
+# How to secure an API
+
+## What is an API?
+
+API stands for Application Programming Interface. In simple words, it refers to an interface that allows an application to access data from other application.
+
+Is a set of rules or protocols that allows computer applications to communicate with each other to exchange data, features and functionality.
+
+## Why it is important to secure them?
+
+This method of communication is the most used around the world, is the entry point for numerous systems and databases.
+These include web and mobile applications, systems interconnection, online payments, third-party services and IoT systems.
+
+Because of this, it is very important to have this considerations when making an API:
+
+export let icon = false;
+export const description1 = [
+  "If an API handles personal, financial, or medical information, it must prevent leaks or unauthorized access.",
+  "Use of encryption (HTTPS/TLS) to protect data in transit.",
+];
+
+<Dropdown
+  title="Protection of sensitive data"
+  Icon={icon}
+  description={description1}
+/>
+
+export const description2 = [
+  "Poorly protected APIs can be vulnerable to attacks such as SQL injection, cross-site scripting (XSS), brute force attacks and API scraping.",
+  "Validation and sanitization of input data to prevent attacks.",
+];
+
+<Dropdown title="Attack prevention" Icon={icon} description={description2} />
+
+export const description3 = [
+  "It is crucial that only authorized users can interact with certain resources, preventing malicious actors from exploiting the API.",
+  "You can use Secure authentication and authorization (OAuth 2.0, JWT, API Keys).",
+];
+
+<Dropdown title="Access control" Icon={icon} description={description3} />
+
+export const description4 = [
+  "An attack like DDoS can overload an API and cause the service to stop working",
+  "Implementation of rate limiting to avoid abuse.",
+];
+
+<Dropdown title="Service Availability" Icon={icon} description={description4} />
+
+# How to
+
+I have created a basic API with node.js and express to show how we can add some security measures to avoid malintentioned people to have a bad use of it.
+
+<GoToBtn
+  text="Go to Github Code"
+  href="https://github.com/lukitas06/node_sec_api"
+/>

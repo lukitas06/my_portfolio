@@ -19,10 +19,20 @@ export const security = [
         link: 'https://owasp.org/www-project-top-ten/',
         image: '/articles_images/owasp-logo.png',
     },
-    {
-        title: 'How to Prevent SQL Injection Attacks',
-        text: 'SQL injection is a common security vulnerability that can allow attackers to access your database and steal sensitive information. In this article, we will discuss how to prevent SQL injection attacks and keep your web application secure.',
-        link: 'https://www.google.com',
-        image: '/articles_images/anonimo-card.jpg',
-    }
+    // {
+    //     title: 'How to Prevent SQL Injection Attacks',
+    //     text: 'SQL injection is a common security vulnerability that can allow attackers to access your database and steal sensitive information. In this article, we will discuss how to prevent SQL injection attacks and keep your web application secure.',
+    //     link: 'https://www.google.com',
+    //     image: '/articles_images/anonimo-card.jpg',
+    // }
 ];
+
+
+export const howTo = [
+    {
+        title: 'How to secure an API',
+        text: 'A  guide on how to secure an API. This guide covers the best practices for securing an API and preventing common security vulnerabilities.',
+        link: '/blog/api',
+        image: '/articles_images/api.png.avif'
+    },
+]

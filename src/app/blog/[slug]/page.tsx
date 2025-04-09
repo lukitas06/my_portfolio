@@ -14,7 +14,7 @@ export default async function ProjectDetails({
     const { default: Post } = await import(`@/lib/blog/${slug}.mdx`);
 
     return (
-        <div className='p-10'>
+        <div className='p-10 w-[90%] flex flex-col justify-self-center'>
             <Post />
         </div>
     )

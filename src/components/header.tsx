@@ -45,7 +45,7 @@ export default function Header() {
                     <ul className='text-white flex flex-col items-center gap-3'>
                         <li className='page-link'> <Link href="/">HOME</Link></li>
                         <li className='page-link'><Link href="/about">ABOUT</Link></li>
-                        <li className='page-link'><Link href="/projects">PROJECTS</Link></li>
+                        {/* <li className='page-link'><Link href="/projects">PROJECTS</Link></li> */}
                         <li className='page-link'><Link href="/blog">BLOG</Link></li>
                     </ul>
                 </div>
@@ -64,8 +64,8 @@ export default function Header() {
                 <div className='links-div hidden md:flex'>
                     <ul className=' w-full flex flex-row justify-around text-white'>
                         <li className='page-link'> <Link href="/">HOME</Link></li>
-                        <li className='page-link'><Link href="/about">ABOUT</Link></li>
-                        <li className='page-link'><Link href="/projects">PROJECTS</Link></li>
+                        {/* <li className='page-link'><Link href="/about">ABOUT</Link></li> */}
+                        {/* <li className='page-link'><Link href="/projects">PROJECTS</Link></li> */}
                         <li className='page-link'><Link href="/blog">BLOG</Link></li>
                     </ul>
                 </div>
